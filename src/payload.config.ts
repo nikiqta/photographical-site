@@ -11,7 +11,22 @@ import { Media } from './collections/Media'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import nodemailer from 'nodemailer'
+
 export default buildConfig({
+  localization: {
+    locales: ['en', 'bg'],
+    defaultLocale: 'bg',
+  },
+
+  i18n: {
+    supportedLanguages: {
+      en,
+      bg,
+    },
+    fallbackLanguage: 'en',
+  },
   admin: {
     user: Users.slug,
     importMap: {
@@ -26,6 +41,19 @@ export default buildConfig({
   },
   db: mongooseAdapter({
     url: process.env.DATABASE_URL || '',
+  }),
+  email: nodemailerAdapter({
+    transport: nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    }),
+    defaultFromAddress: process.env.EMAIL_INBOX || process.env.EMAIL_USERNAME || '',
+    defaultFromName: 'Ivan Ivanov',
   }),
   sharp,
   plugins: [],
