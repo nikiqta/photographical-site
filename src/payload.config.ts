@@ -14,6 +14,9 @@ const dirname = path.dirname(filename)
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
 
+import { en } from '@payloadcms/translations/languages/en'
+import { bg } from '@payloadcms/translations/languages/bg'
+
 export default buildConfig({
   localization: {
     locales: ['en', 'bg'],
