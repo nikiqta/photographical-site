@@ -1,38 +1,26 @@
 import canUseDOM from './canUseDOM'
 
 export const getServerSideURL = () => {
-  let url =
-    process.env.NEXT_PUBLIC_SITE_URL ||
+  return (
     process.env.NEXT_PUBLIC_SERVER_URL ||
-    process.env.__NEXT_PRIVATE_ORIGIN
-
-  if (!url && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  }
-
-  if (!url) {
-    const port = process.env.PORT || '3000'
-    url = `http://localhost:${port}`
-  }
-
-  return url
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : 'http://localhost:3000')
+  )
 }
 
 export const getClientSideURL = () => {
-  const envUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_SERVER_URL
-  if (envUrl) {
-    return envUrl
+  if (canUseDOM) {
+    const protocol = window.location.protocol
+    const domain = window.location.hostname
+    const port = window.location.port
+
+    return `${protocol}//${domain}${port ? `:${port}` : ''}`
   }
 
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   }
 
-  if (canUseDOM) {
-    const { protocol, hostname, port } = window.location
-    return `${protocol}//${hostname}${port ? `:${port}` : ''}`
-  }
-
-  const fallbackPort = process.env.PORT || '3000'
-  return `http://localhost:${fallbackPort}`
+  return process.env.NEXT_PUBLIC_SERVER_URL || ''
 }

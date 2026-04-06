@@ -1,53 +1,40 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import path from 'path'
-import { buildConfig } from 'payload'
-import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+import path from 'path'
+import { buildConfig, PayloadRequest } from 'payload'
+import { fileURLToPath } from 'url'
 
-import { Users } from './collections/Users'
+import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
-
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+import { Pages } from './collections/Pages'
+import { Posts } from './collections/Posts'
+import { Users } from './collections/Users'
+import { Footer } from './Footer/config'
+import { Header } from './Header/config'
+import { plugins } from './plugins'
+import { defaultLexical } from '@/fields/defaultLexical'
+import { getServerSideURL } from './utilities/getURL'
 
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
 
-import { en } from '@payloadcms/translations/languages/en'
-import { bg } from '@payloadcms/translations/languages/bg'
-import { getServerSideURL } from './utilities/getURL'
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
 
 export default buildConfig({
-  localization: {
-    locales: ['en', 'bg'],
-    defaultLocale: 'bg',
-  },
-  i18n: {
-    supportedLanguages: {
-      en,
-      bg,
-    },
-    fallbackLanguage: 'en',
-  },
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
+      // Feel free to delete this at any time. Simply remove the line below.
       beforeLogin: ['@/components/BeforeLogin'],
       // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
-      // beforeDashboard: ['@/components/BeforeDashboard'],
+      // Feel free to delete this at any time. Simply remove the line below.
+      beforeDashboard: ['@/components/BeforeDashboard'],
     },
     importMap: {
       baseDir: path.resolve(dirname),
     },
     user: Users.slug,
-    dateFormat: 'dd.MM.yyyy',
-    //@ts-expect-error todo revisit later
-    locale: 'bg',
-    locales: ['bg', 'en'],
-    meta: {
-      titleSuffix: 'BGAIR',
-    },
     livePreview: {
       breakpoints: [
         {
@@ -70,25 +57,7 @@ export default buildConfig({
         },
       ],
     },
-    timezones: {
-      supportedTimezones: [
-        {
-          label: 'Europe/Athens',
-          value: 'Europe/Athens',
-        },
-      ],
-      defaultTimezone: 'Europe/Athens',
-    },
   },
-  collections: [Users, Media],
-  editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
-  typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
-  },
-  db: mongooseAdapter({
-    url: process.env.DATABASE_URL || '',
-  }),
   email: nodemailerAdapter({
     transport: nodemailer.createTransport({
       host: process.env.SMTP_HOST,
@@ -100,15 +69,44 @@ export default buildConfig({
       },
     }),
     defaultFromAddress: process.env.EMAIL_INBOX || process.env.EMAIL_USERNAME || '',
-    defaultFromName: 'Ivan Ivanov',
+    defaultFromName: 'Bulgaria Air',
   }),
+  // This config helps us configure global or default features that the other editors can inherit
+  editor: defaultLexical,
+  db: mongooseAdapter({
+    url: process.env.DATABASE_URL || '',
+  }),
+  collections: [Pages, Posts, Media, Categories, Users],
   cors: [
     getServerSideURL(),
-    process.env.NEXT_PUBLIC_SERVER_URL,
-    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.NEXT_PUBLIC_SERVER_URL || '',
+    process.env.NEXT_PUBLIC_SITE_URL || '',
     'http://localhost:3000',
     'http://localhost:3001',
-  ].filter(Boolean) as string[],
+  ].filter(Boolean),
+  globals: [Header, Footer],
+  plugins,
+  secret: process.env.PAYLOAD_SECRET,
   sharp,
-  plugins: [],
+  typescript: {
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  jobs: {
+    access: {
+      run: ({ req }: { req: PayloadRequest }): boolean => {
+        // Allow logged in users to execute this endpoint (default)
+        if (req.user) return true
+
+        const secret = process.env.CRON_SECRET
+        if (!secret) return false
+
+        // If there is no logged in user, then check
+        // for the Vercel Cron secret to be present as an
+        // Authorization header:
+        const authHeader = req.headers.get('authorization')
+        return authHeader === `Bearer ${secret}`
+      },
+    },
+    tasks: [],
+  },
 })
