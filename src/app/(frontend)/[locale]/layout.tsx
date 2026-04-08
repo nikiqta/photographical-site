@@ -13,14 +13,15 @@ import { Header } from '@/Header/Component'
 import { Providers } from '@/providers'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
-import { InitTheme } from '@/providers/Theme/InitTheme'
-import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import { notFound } from 'next/navigation'
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core'
+
+import '@mantine/core/styles.css'
+import '@/static/css/globals.css'
 
 export default async function RootLayout({
   children,
