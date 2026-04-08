@@ -13,7 +13,7 @@ import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 
-import './globals.css'
+import '../../../static/css/globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
@@ -54,11 +54,13 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <AdminBar
-              adminBarProps={{
-                preview: isEnabled,
-              }}
-            />
+            {isEnabled ? (
+              <AdminBar
+                adminBarProps={{
+                  preview: isEnabled,
+                }}
+              />
+            ) : null}
 
             <Header />
             {children}
