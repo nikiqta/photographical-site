@@ -46,6 +46,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(dirname),
   },
+  experimental: {
+    optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
+  },
 }
 
 const withNextIntl = createNextIntlPlugin()
