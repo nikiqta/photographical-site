@@ -1,6 +1,4 @@
-import Link from 'next/link'
-import React from 'react'
-
+import NavigationLink from '@/components/NavigationLink'
 import { Button } from '@/components/ui/button'
 
 export default function NotFound() {
@@ -11,7 +9,7 @@ export default function NotFound() {
         <p className="mb-4">This page could not be found.</p>
       </div>
       <Button asChild variant="default">
-        <Link href="/">Go home</Link>
+        <NavigationLink href="/">Go home</NavigationLink>
       </Button>
     </div>
   )

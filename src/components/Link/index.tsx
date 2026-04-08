@@ -1,9 +1,9 @@
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
-import Link from 'next/link'
 import React from 'react'
 
 import type { Page, Post } from '@/payload-types'
+import NavigationLink from '@/components/NavigationLink'
 
 type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
@@ -48,19 +48,19 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <NavigationLink className={cn(className)} href={href || url || ''} {...newTabProps}>
         {label && label}
         {children && children}
-      </Link>
+      </NavigationLink>
     )
   }
 
   return (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <NavigationLink className={cn(className)} href={href || url || ''} {...newTabProps}>
         {label && label}
         {children && children}
-      </Link>
+      </NavigationLink>
     </Button>
   )
 }

@@ -1,12 +1,13 @@
 'use client'
 import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
-import Link from 'next/link'
+
 import React, { Fragment } from 'react'
 
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
+import NavigationLink from '@/components/NavigationLink'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
 
@@ -47,11 +48,11 @@ export const Card: React.FC<{
             {categories?.map((category, index) => {
               if (typeof category === 'object') {
                 const { title: titleFromCategory } = category
-  
+
                 const categoryTitle = titleFromCategory || 'Untitled category'
-  
+
                 const isLast = index === categories.length - 1
-  
+
                 return (
                   <Fragment key={index}>
                     {categoryTitle}
@@ -59,7 +60,7 @@ export const Card: React.FC<{
                   </Fragment>
                 )
               }
-  
+
               return null
             })}
           </div>
@@ -67,9 +68,9 @@ export const Card: React.FC<{
         {titleToUse && (
           <div className="prose">
             <h3>
-              <Link className="not-prose" href={href} ref={link.ref}>
+              <NavigationLink className="not-prose" href={href} ref={link.ref}>
                 {titleToUse}
-              </Link>
+              </NavigationLink>
             </h3>
           </div>
         )}

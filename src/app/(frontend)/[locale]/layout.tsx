@@ -15,9 +15,31 @@ import { draftMode } from 'next/headers'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
+import { NextIntlClientProvider, hasLocale } from 'next-intl'
+import { getMessages, setRequestLocale } from 'next-intl/server'
+import { routing } from '@/i18n/routing'
+import { notFound } from 'next/navigation'
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: Promise<{ locale: string }>
+}) {
   const { isEnabled } = await draftMode()
+
+  const { locale } = await params
+
+  // Ensure that the incoming `locale` is valid and supported by the application
+  if (!hasLocale(routing.locales, locale)) {
+    notFound()
+  }
+
+  // Enable static rendering for the correct locale
+  setRequestLocale(locale)
+
+  const messages = await getMessages()
 
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
@@ -27,17 +49,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
       </head>
       <body>
-        <Providers>
-          <AdminBar
-            adminBarProps={{
-              preview: isEnabled,
-            }}
-          />
+        <NextIntlClientProvider messages={messages}>
+          <Providers>
+            <AdminBar
+              adminBarProps={{
+                preview: isEnabled,
+              }}
+            />
 
-          <Header />
-          {children}
-          <Footer />
-        </Providers>
+            <Header />
+            {children}
+            <Footer />
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

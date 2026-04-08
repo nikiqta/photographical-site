@@ -18,10 +18,20 @@ import { getServerSideURL } from './utilities/getURL'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
 
+import { en } from '@payloadcms/translations/languages/en'
+import { bg } from '@payloadcms/translations/languages/bg'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  i18n: {
+    supportedLanguages: {
+      en,
+      bg,
+    },
+    fallbackLanguage: 'en',
+  },
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
