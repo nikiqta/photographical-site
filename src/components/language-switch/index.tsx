@@ -39,7 +39,7 @@ export default function LanguageSwitch() {
       <span aria-hidden="true">
         <Flag code={isEnglish ? 'BG' : 'GB-UKM'} size="m" />
       </span>
-      <Text c="gray" fw="700" ml="xs" size="md">
+      <Text c="white" fw="700" ml="xs" size="md">
         {isEnglish ? bgLabel : enLabel}
       </Text>
     </Button>

@@ -8,7 +8,7 @@ import type { Header } from '@/payload-types'
 import { Logo } from '@/components/Logo/Logo'
 import { HeaderNav } from './Nav'
 import NavigationLink from '@/components/NavigationLink'
-import LanguageSwitch from '@/components/language-switch'
+import LanguageSwitch from '@/components/Language-switch'
 
 interface HeaderClientProps {
   data: Header
